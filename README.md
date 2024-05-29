@@ -12,4 +12,4 @@ This dashboard needed to be able to search a city and show the current weather c
 
 ## Links
 Github: https://github.com/S1NGS1NG80/Weather-Dashboard.git
-Deployed: 
+Deployed: https://s1ngs1ng80.github.io/Weather-Dashboard/
