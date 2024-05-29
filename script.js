@@ -13,41 +13,6 @@ let coordinates;
 let flag = false;
 
 // Function to fetch coordinates for a given location
-// async function fetchCoordinates(location) {
-
-//     if (location) {
-//         const baseUrlCoordinates = "https://api.openweathermap.org/geo/1.0/direct";
-//         const queryParams = new URLSearchParams({
-//             'q': location,
-//             'limit': '1',
-//             'appid': apiKey
-//         });
-
-//         const queryURL = `${baseUrlCoordinates}?${queryParams}`;
-
-//         try {
-//             const response = await fetch(queryURL);
-//             if (!response.ok) {
-//                 return false;
-//             }
-
-//             const data = await response.json();
-//             for (let i = 0; i < data.length; i++) {
-
-//                 if (location == data[i].name) {
-//                     return data[i];
-//                 }
-//                 //location name with two or more words // change filter criteria // input location is a part of retrieved location name
-//                 else if (data[i].name.split(" ").length >= 2 && data[i].name.includes(location)) {
-//                     return data[i];
-//                 }
-//             }
-//             return false;
-//         } catch (error) {
-//             return false;
-//         }
-//     }
-// }
 function fetchCoordinates(location) {
     if (!location) return Promise.resolve(false);
 
@@ -85,29 +50,6 @@ function fetchCoordinates(location) {
 }
 
 // Function to fetch current weather for a given latitude and longitude
-// async function fetchWeather(latitude, longitude) {
-
-//     const baseUrlWeather = "https://api.openweathermap.org/data/2.5/weather";
-//     const queryParams = new URLSearchParams({
-//         'lat': latitude.toFixed(2),
-//         'lon': longitude.toFixed(2),
-//         'units': 'metric',
-//         'appid': apiKey
-//     });
-
-//     const queryURL = `${baseUrlWeather}?${queryParams}`;
-
-//     try {
-//         const response = await fetch(queryURL);
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
-//         const weatherData = await response.json();
-//         return weatherData;
-//     } catch (error) {
-//         console.error('Error fetching weather data:', error);
-//     }
-// }
 function fetchWeather(latitude, longitude) {
     const baseUrlWeather = "https://api.openweathermap.org/data/2.5/weather";
     const queryParams = new URLSearchParams({
@@ -135,51 +77,6 @@ function fetchWeather(latitude, longitude) {
 }
 
 // Function to fetch weather forecast for a given latitude and longitude
-// async function fetchForecast(latitude, longitude) {
-//     const baseUrlForecast = "https://api.openweathermap.org/data/2.5/forecast";
-//     const queryParams = new URLSearchParams({
-//         'lat': latitude.toFixed(2),
-//         'lon': longitude.toFixed(2),
-//         'units': 'metric',
-//         'appid': apiKey
-//     });
-
-//     const queryURL = `${baseUrlForecast}?${queryParams}`;
-
-//     try {
-//         const response = await fetch(queryURL);
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
-
-//         const data = await response.json();
-
-//         let offsetInSecondsFromUTC = data.city.timezone;
-//         let forecastWeatherData = data.list;
-//         let filteredWeatherData = [];
-
-//         for (let i = 0; i < forecastWeatherData.length; i++) {
-
-//             //getting UTC timestamp
-//             let timeStamp = forecastWeatherData[i].dt_txt;
-
-//             //changing UTC timestamp to local time timestamp
-//             let timeStampLocal = timeStampUTCToTimeStampLocal(timeStamp, offsetInSecondsFromUTC);
-
-//             //getting local time/hour
-//             let hour = timeStampToHour(timeStampLocal);
-
-//             //saving only early afternoon (local time) weather data
-//             if (12 <= hour && hour < 15) {
-//                 filteredWeatherData.push(forecastWeatherData[i])
-//             }
-//         }
-//         return filteredWeatherData;
-//     } catch (error) {
-//         console.error('Error fetching weather data:', error);
-//     }
-// }
-
 function fetchForecast(latitude, longitude) {
     const baseUrlForecast = "https://api.openweathermap.org/data/2.5/forecast";
     const queryParams = new URLSearchParams({
@@ -335,13 +232,8 @@ function createCard(index) {
 }
 
 function addForecastHeading(weatherForecastElement) {
-
     const heading = document.createElement("h3");
-
     heading.textContent = "5-day forecast:"
-
-    weatherForecastElement.prepend(heading);
-
 }
 
 // getting current date in desired format dd/mm/yyyy
@@ -358,67 +250,6 @@ function currentDate() {
 }
 
 // fill in weather dashboard with fetched and processed data
-// async function displayWeatherAndForecast() {
-
-//     //if location has been found
-//     if (coordinates) {
-
-//         const latitude = coordinates.lat;
-//         const longitude = coordinates.lon;
-
-//         // Wait for the asynchronous fetchWeather operation to complete
-//         const weatherData = await fetchWeather(latitude, longitude);
-
-//         // Wait for the asynchronous fetchForecast operation to complete
-//         const forecastData = await fetchForecast(latitude, longitude);
-
-//         let data = [];
-//         data = [weatherData, ...forecastData];
-
-//         // Display  forecast
-//         for (let i = 0; i < data.length; i++) {
-
-//             // adding date to a card  
-//             let dateArea = document.querySelector(`#date_${i}`);
-
-//             //for current weather card
-//             if (i === 0) {
-//                 dateArea.textContent = coordinates.name + " (" + currentDate() + ") ";
-//             }
-
-//             //for weather forecast data
-//             else {
-//                 let timeStamp = data[i].dt_txt;
-//                 dateArea.textContent = timeStampToFormattedDate(timeStamp);
-//             }
-
-//             //adding icon to a card
-
-//             let iconArea = document.querySelector(`#img_${i}`);
-//             let icon = data[i].weather[0].icon;
-//             let iconURL = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-//             iconArea.setAttribute("src", iconURL);
-
-//             //adding temperature to a card
-//             let tempArea = document.querySelector(`#temp_${i}`);
-//             let temp = data[i].main.temp;
-//             tempArea.textContent = `Temp: ${temp}  °C`;
-
-//             //adding wind speed to a card
-//             let windArea = document.querySelector(`#wind_${i}`);
-//             let windSpeed = data[i].wind.speed;
-//             windArea.textContent = `Wind: ${windSpeed} m/s`;
-
-//             //adding humidity to a card
-//             let humidityArea = document.querySelector(`#humidity_${i}`);
-//             let humidity = data[i].main.humidity;
-//             humidityArea.textContent = `Humidity: ${humidity} %`;
-
-//         } //end of for
-
-//     } //end of if
-
-// }
 function displayWeatherAndForecast() {
     // If location has been found
     if (coordinates) {
@@ -489,7 +320,7 @@ function timeStampToFormattedDate(timeStamp) {
 // adding searched location to local storage
 
 function addToSearchHistory(location) {
-    
+
     if (location && coordinates && !storedLocations.includes(location)) {
         const button = createButton(location);
         searchHistoryArea.appendChild(button);
@@ -513,7 +344,6 @@ function initialiseButtons() {
 }
 
 //dynamically create buttons for searched and found locations
-
 function createButton(location) {
     const buttonContainer = document.createElement("div");
     const button = document.createElement("button");
@@ -528,23 +358,7 @@ function createButton(location) {
     return buttonContainer;
 }
 
-//display message about location not found or no input 
-function displayMessage(message, duration) {
-    const dashboard = document.querySelector("#dashboard")
-    const messageArea = document.createElement("div");
-    messageArea.className = "alert alert-danger";
-    messageArea.style.textAlign = "center";
-    messageArea.textContent = message;
-    dashboard.prepend(messageArea);
-
-    setTimeout(() => {
-        messageArea.remove();
-    }, duration);
-
-}
-
 //functions handling local storage
-
 function saveToLocalStorage(location) {
     // Retrieve existing locations from local storage or initialize an empty array
     storedLocations = JSON.parse(localStorage.getItem("searchHistory")) || [];
@@ -560,51 +374,55 @@ function getFromLocalStorage() {
 }
 
 //event listeners
-
-searchBtn.addEventListener("click", async function (event) {
+searchBtn.addEventListener("click", function (event) {
     event.preventDefault();
     const searchInput = document.querySelector("#search-input");
     const location = searchInput.value.trim();
-    if (!location) {
-        displayMessage("Please enter a location.", 5000);
-        return;
-    }
 
-    coordinates = await fetchCoordinates(location);
-    //if fetch returns false location doesn't exist in open weather database or there was an error
+    fetchCoordinates(location)
+        .then(coords => {
+            coordinates = coords;
 
-    if (!coordinates) {
-        displayMessage(`Location ${location} not found.`, 5000);
-        return;
-
-    }
-
-    // set weather dashboard only once per session  
-
-    if (flag === false) {
-        flag = true;
-        setWeatherDashboard();
-    }
-
-    await displayWeatherAndForecast();
-    addToSearchHistory(location);
-});
-
-searchHistoryArea.addEventListener("click", async function (event) {
-    event.preventDefault();
-    //check which exactly button from search history area was clicked excluding search button
-    if (event.target.tagName === "BUTTON" && event.target.id !== "search-button") {
-        const location = event.target.dataset.location;
-        coordinates = await fetchCoordinates(location);
-        if (coordinates) {
-            //set weather dashboard once and only once for a session
+            // Set weather dashboard only once per session
             if (flag === false) {
                 flag = true;
                 setWeatherDashboard();
             }
 
-            await displayWeatherAndForecast();
-        }
+            return displayWeatherAndForecast();
+        })
+        .then(() => {
+            if (coordinates) {
+                addToSearchHistory(location);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching coordinates or displaying weather:', error);
+        });
+});
+
+searchHistoryArea.addEventListener("click", function (event) {
+    event.preventDefault();
+    // Check which button from search history area was clicked excluding the search button
+    if (event.target.tagName === "BUTTON" && event.target.id !== "search-button") {
+        const location = event.target.dataset.location;
+
+        fetchCoordinates(location)
+            .then(coords => {
+                coordinates = coords;
+                if (coordinates) {
+                    // Set weather dashboard once and only once for a session
+                    if (flag === false) {
+                        flag = true;
+                        setWeatherDashboard();
+                    }
+
+                    return displayWeatherAndForecast();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching coordinates or displaying weather:', error);
+            });
     }
 });
 
